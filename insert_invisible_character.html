@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<!--
+    Copyright (c) 2014 Kei Misawa
+
+    This software is released under the MIT License.
+
+    http://opensource.org/licenses/mit-license.php
+-->
+<head>
+<meta charset="utf-8"/>
+<title>Insert Invisible Characters</title>
+<style>
+textarea { width: 100%; height: 200px; }
+#button { width: 100px; }
+</style>
+</head>
+<body>
+<h1>Insert Invisible Characters</h1>
+<div>
+Input text:
+<textarea id="input">これはテストです。「かぎかっこ」
+asdfasdf(alphabet1234)</textarea>
+</div>
+<button id="insert">Insert Invisible Characters</button>
+<div>
+Output text:
+<textarea id="output"></textarea>
+</div>
+</body>
+<script>
+'use strict';
+
+document.getElementById('insert').addEventListener('click', insert_button_click, false);
+
+function insert_button_click(){
+	document.getElementById('output').value = insert_invisible_char(document.getElementById('input').value);
+}
+function insert_invisible_char(strinput){
+    //return strinput.replace(/(.)/g, '$1\u202e\u202d');
+    //return '\u202d' + strinput.replace(/(.)(.)/g, '\u202c\u202e$2$1\u202c\u202d') + '\u202c';
+    return strinput.replace(/(.)/g, '$1\u202c');
+}
+</script>
+</html>
