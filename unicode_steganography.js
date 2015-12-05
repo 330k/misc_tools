@@ -51,7 +51,7 @@
             return result.join('');
         });
         return combine_shuffle_string(text1, encode_to_zerowidth_characters(text2));
-    }
+    };
     
     /**
       Decoder
@@ -82,5 +82,7 @@
         var result = split_zerowidth_characters(text1);
         result[1] = decode_from_zero_width_characters(result[1]);
         return result;
-    }
+    };
+    
+    return null;
 })();
