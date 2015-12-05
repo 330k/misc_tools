@@ -64,6 +64,15 @@ document.getElementById('decode').addEventListener('click', (function(){
     document.getElementById('input').value = result[0];
     document.getElementById('hidden').value = result[1];
 }));
+document.getElementById('input_clear').addEventListener('click', (function(){
+    document.getElementById('input').value = '';
+}));
+document.getElementById('hidden_clear').addEventListener('click', (function(){
+    document.getElementById('hidden').value = '';
+}));
+document.getElementById('output_clear').addEventListener('click', (function(){
+    document.getElementById('output').value = '';
+}));
 
 window.setInterval(function(){
     document.getElementById('input_length').innerText = '(length: ' + document.getElementById('input').value.length + ')';
