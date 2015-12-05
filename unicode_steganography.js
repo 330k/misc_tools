@@ -90,7 +90,7 @@
             }
             var result = [];
             for(var i = 0; i < r.length; i += codelength){
-                result.push(String.fromCodePoint(Number.parseInt(r.substr(i, codelength), radix)));
+                result.push(String.fromCharCode(parseInt(r.substr(i, codelength), radix)));
             }
             
             return result.join('');
