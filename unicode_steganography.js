@@ -17,7 +17,7 @@
         if(newchars.length >= 2){
             chars = newchars.split('');
             radix = chars.length;
-            codelength = Math.ceil(Math.log2(65536) / Math.log2(radix));
+            codelength = Math.ceil(Math.log(65536) / Math.log(radix));
         }
         return null;
     };
