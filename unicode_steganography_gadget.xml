@@ -25,14 +25,14 @@ table { width: 100%; }
 <tr>
 <td style="width: 45%;">
 <div>
-Original Text: <span id="input_length"></span>
+Original Text: <button id="input_clear">Clear</button> <span id="input_length"></span>
 <textarea id="input" class="left">The quick brown fox jumps over the lazy dog
 1234567890.:,;(*!?')
 いろはにほへと ちりぬるを
 色は匂へど 散りぬるを</textarea>
 </div>
 <div>
-Hidden Text: <span id="hidden_length"></span>
+Hidden Text: <button id="hidden_clear">Clear</button> <span id="hidden_length"></span>
 <textarea id="hidden" class="left">Where am I?</textarea>
 </div>
 </td>
@@ -42,7 +42,7 @@ Hidden Text: <span id="hidden_length"></span>
 </td>
 <td style="width: 45%; vertical-align: top;">
 <div>
-Output: <span id="output_length"></span>
+Output: <button id="output_clear">Clear</button> <span id="output_length"></span>
 <textarea id="output" class="right"></textarea>
 </div>
 </td>
