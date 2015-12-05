@@ -35,8 +35,8 @@
         });
         var combine_shuffle_string = (function(str1, str2){
             var result = [];
-            var c1 = str1.split(/./g);
-            var c2 = str2.split(new RegExp('.{' + codelength + '}', 'g'));
+            var c1 = str1.split(/(.)/g);
+            var c2 = str2.split(new RegExp('(.{' + codelength + '})', 'g'));
             var ratio = c1.length / (c1.length + c2.length);
             
             while((c1.length > 0) && (c2.length > 0)){
