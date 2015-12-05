@@ -29,7 +29,11 @@
     var encodeSteganography = function(text1, text2){
         var encode_to_zerowidth_characters = (function(str1){
             var result = [];
-            var base = '0'.repeat(codelength);
+            //var base = '0'.repeat(codelength); // IE not support this method
+            var base = '';
+            for(var i = 0; i < codelength; i++){
+                base += '0';
+            }
             
             for(var i = 0; i < str1.length; i++){
                 var c = str1.charCodeAt(i);
