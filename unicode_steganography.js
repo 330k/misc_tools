@@ -10,12 +10,12 @@
     var codelength = 0;
     /**
       Set characters of coded hidden text(zero width characters)
-      args: array of characters
+      args: string of zero width characters
       return: null
      */
     var setUseChars = function(newchars){
         if(newchars.length >= 2){
-            chars = newchars;
+            chars = newchars.split('');
             radix = chars.length;
             codelength = Math.ceil(Math.log2(65536) / Math.log2(radix));
         }
@@ -97,7 +97,7 @@
         return result;
     };
     
-    setUseChars(['\u200b', '\u200c', '\u200d', '\u202c']);
+    setUseChars('\u200b\u200c\u200d\u202c');
     
     window.unicodeSteganographer = {
         encodeSteganography: encodeSteganography,
