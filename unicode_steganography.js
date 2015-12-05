@@ -1,4 +1,10 @@
 /**
+ *  Copyright (c) 2015 Kei Misawa
+ *  This software is released under the MIT License.
+ *  http://opensource.org/licenses/mit-license.php
+ */
+
+/**
  Zero-Width Unicode Character Steganography Encoder
   args: original text, hidden text
   return: unicode text with steganography
@@ -28,7 +34,7 @@ function encode_steganography(text1, text2){
     var embed_string = (function(str1, str2){
         var result = [];
         var c1 = str1.split('');
-        var c2 = str2.split('');
+        var c2 = str2.split('.{8}');
         var ratio = c1.length / (c1.length + c2.length);
         
         while((c1.length > 0) && (c2.length > 0)){
