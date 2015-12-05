@@ -49,7 +49,7 @@ Output: <span id="output_length"></span>
 </tr>
 </table>
 </body>
-<script type="text/javascript" src="unicode_steganography.js"></script>
+<script type="text/javascript" src="//330k.github.io/misc_tools/unicode_steganography.js"></script>
 <script>
 'use strict';
 
