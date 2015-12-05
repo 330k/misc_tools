@@ -5,15 +5,28 @@
  *  http://opensource.org/licenses/mit-license.php
  */
 (function(){
-    var chars = ['\u200b', '\u200c', '\u200d', '\u202c'];
-    var radix = chars.length;
-    var codelength = Math.ceil(Math.log2(65536) / Math.log2(radix));
+    var chars = [];
+    var radix = 0;
+    var codelength = 0;
+    /**
+      Set characters of coded hidden text(zero width characters)
+      args: array of characters
+      return: null
+     */
+    var setUseChars = function(newchars){
+        if(newchars.length >= 2){
+            chars = newchars;
+            radix = chars.length;
+            codelength = Math.ceil(Math.log2(65536) / Math.log2(radix));
+        }
+        return null;
+    };
     /**
       Encoder
       args: original text, hidden text
       return: unicode text with steganography
      */
-    window.encode_steganography = function(text1, text2){
+    var encodeSteganography = function(text1, text2){
         var encode_to_zerowidth_characters = (function(str1){
             var result = [];
             var base = '0'.repeat(codelength);
@@ -58,7 +71,7 @@
       args: unicode text with steganography
       return: array of [original text, hidden text]
      */
-    window.decode_steganography = function(text1){
+    var decodeSteganography = function(text1){
         var split_zerowidth_characters = (function(str1){
         	var result = [];
         	result[0] = str1.replace(new RegExp('[' + chars.join('') + ']', 'g'), '');
@@ -82,6 +95,14 @@
         var result = split_zerowidth_characters(text1);
         result[1] = decode_from_zero_width_characters(result[1]);
         return result;
+    };
+    
+    setUseChars(['\u200b', '\u200c', '\u200d', '\u202c']);
+    
+    window.unicodeSteganographer = {
+        encodeSteganography: encodeSteganography,
+        decodeSteganography: decodeSteganography,
+        setUseChars: setUseChars
     };
     
     return null;

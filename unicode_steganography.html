@@ -61,11 +61,11 @@ Output: <span id="output_length"></span>
 document.getElementById('encode').addEventListener('click', (function(){
     var text1 = document.getElementById('input').value;
     var text2 = document.getElementById('hidden').value;
-    document.getElementById('output').value = encode_steganography(text1, text2);
+    document.getElementById('output').value = unicodeSteganographer.encodeSteganography(text1, text2);
 }));
 document.getElementById('decode').addEventListener('click', (function(){
     var text1 = document.getElementById('output').value;
-    var result = decode_steganography(text1);
+    var result = unicodeSteganographer.decodeSteganography(text1);
     document.getElementById('input').value = result[0];
     document.getElementById('hidden').value = result[1];
 }));
