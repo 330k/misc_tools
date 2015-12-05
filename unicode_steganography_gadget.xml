@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="Insert Invisible Characters" height="500" scaling="false" />
+  <ModulePrefs title="Unicode Steganography with Zero-Width Characters" height="300" scaling="false" />
   <Content type="html"><![CDATA[ 
 <!DOCTYPE html>
 <html lang="ja">
 <!--
-    Copyright (c) 2014 Kei Misawa
+    Copyright (c) 2015 Kei Misawa
 
     This software is released under the MIT License.
 
@@ -13,35 +13,72 @@
 -->
 <head>
 <meta charset="utf-8"/>
-<title>Insert Invisible Characters</title>
+<title>Unicode Steganography with Zero-Width Characters</title>
 <style>
-textarea { width: 100%; height: 200px; }
-#button { width: 100px; }
+table { width: 100%; }
+.left { width: 100%; height: 100px; }
+.right { width: 100%; height: 200px; }
 </style>
 </head>
 <body>
-<h1>Insert Invisible Characters</h1>
+<table>
+<tr>
+<td style="width: 45%;">
 <div>
-Input text:
-<textarea id="input">これはテストです。</textarea>
+Original Text: <span id="input_length"></span>
+<textarea id="input" class="left">The quick brown fox jumps over the lazy dog
+1234567890.:,;(*!?')
+いろはにほへと ちりぬるを
+色は匂へど 散りぬるを</textarea>
 </div>
-<button id="insert">Insert Invisible Characters</button>
 <div>
-Output text:
-<textarea id="output"></textarea>
+Hidden Text: <span id="hidden_length"></span>
+<textarea id="hidden" class="left">Where am I?</textarea>
 </div>
+</td>
+<td style="width: 10%; text-align: center;">
+<button id="encode">Encode</button><br /><br />
+<button id="decode">Decode</button>
+</td>
+<td style="width: 45%; vertical-align: top;">
+<div>
+Output: <span id="output_length"></span>
+<textarea id="output" class="right"></textarea>
+</div>
+</td>
+</tr>
+</table>
 </body>
+<script type="text/javascript" src="unicode_steganography.js"></script>
 <script>
 'use strict';
 
-document.getElementById('insert').addEventListener('click', insert_button_click, false);
+document.getElementById('encode').addEventListener('click', (function(){
+    var text1 = document.getElementById('input').value;
+    var text2 = document.getElementById('hidden').value;
+    document.getElementById('output').value = encode_steganography(text1, text2);
+}));
+document.getElementById('decode').addEventListener('click', (function(){
+    var text1 = document.getElementById('output').value;
+    var result = decode_steganography(text1);
+    document.getElementById('input').value = result[0];
+    document.getElementById('hidden').value = result[1];
+}));
 
-function insert_button_click(){
-	document.getElementById('output').value = insert_invisible_char(document.getElementById('input').value);
-}
-function insert_invisible_char(strinput){
-    return strinput.replace(/(.)/g, '$1\u202e\u202d');
-}
+window.setInterval(function(){
+    document.getElementById('input_length').innerText = '(length: ' + document.getElementById('input').value.length + ')';
+    document.getElementById('hidden_length').innerText = '(length: ' + document.getElementById('hidden').value.length + ')';
+    document.getElementById('output_length').innerText = '(length: ' + document.getElementById('output').value.length + ')';
+}, 100);
+</script>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-71005141-4', 'auto');
+ga('send', 'pageview');
 </script>
 </html>
 ]]>
