@@ -53,6 +53,32 @@ Output: <button id="output_clear">Clear</button> <span id="output_length"></span
 </td>
 </tr>
 </table>
+<hr style="width: 100%;" />
+<h2>Usage</h2>
+<h3><code>unicodeSteganographer.encodeSteganography(text1, text2)</code></h3>
+<div>
+<code>encodeSteganography</code> returns a string which is embedded steganography of text2 into text1.
+</div>
+<h3><code>unicodeSteganographer.decodeSteganography(text)</code></h3>
+<div>
+<code>decodeSteganography</code> returns an array of string, 1st element is plain text, and 2nd element is hidden(decoded) text.
+</div>
+<h3><code>unicodeSteganographer.setUseChars</code></h3>
+<div>
+<code>unicodeSteganographer.setUseChars</code> sets the characters for steganography.<br />
+Default characters used for steganography are U+200C, U+200D, U+202C, and U+FEFF.<br />
+U+200B is deleted in Gmail when a mail is sent.<br />
+<br />
+<h2>Supported Browsers</h2>
+<ul>
+<li>Chromium 45 (Ubuntu 14.04 LTS)</li>
+<li>Firefox 42 (Ubuntu 14.04 LTS)</li>
+<li>Edge (Windows 10)</li>
+<li>Internet Explorer 11 (Windows 10)</li>
+<li>Safari (iOS 9.1)</li>
+<li>Chrome (Android 4.2)</li>
+</ul>
+</div>
 </body>
 <script type="text/javascript" src="unicode_steganography.js"></script>
 <script>
