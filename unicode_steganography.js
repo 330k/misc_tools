@@ -101,7 +101,7 @@
         return result;
     };
     
-    setUseChars('\u200b\u200c\u200d\u202c');
+    setUseChars('\u200c\u200d\u202c\ufeff');
     
     window.unicodeSteganographer = {
         encodeSteganography: encodeSteganography,
