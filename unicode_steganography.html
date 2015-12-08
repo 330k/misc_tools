@@ -42,8 +42,8 @@ Hidden Text: <button id="hidden_clear">Clear</button> <span id="hidden_length"><
 </div>
 </td>
 <td style="width: 10%; text-align: center;">
-<button id="encode">Encode</button><br /><br />
-<button id="decode">Decode</button>
+<button id="encode">Encode-&gt;</button><br /><br />
+<button id="decode">&lt;-Decode</button>
 </td>
 <td style="width: 45%; vertical-align: top;">
 <div>
@@ -55,19 +55,19 @@ Output: <button id="output_clear">Clear</button> <span id="output_length"></span
 </table>
 <hr style="width: 100%;" />
 <h2>Usage</h2>
-<h3><code>unicodeSteganographer.encodeSteganography(text1, text2)</code></h3>
+<h3><code>unicodeSteganographer.encodeSteganography(string1, string2)</code></h3>
 <div>
-<code>encodeSteganography</code> returns a string which is embedded steganography of text2 into text1.
+<code>encodeSteganography</code> returns a string which is embedded steganography of string2 into string1.
 </div>
-<h3><code>unicodeSteganographer.decodeSteganography(text)</code></h3>
+<h3><code>unicodeSteganographer.decodeSteganography(string)</code></h3>
 <div>
 <code>decodeSteganography</code> returns an array of string, 1st element is plain text, and 2nd element is hidden(decoded) text.
 </div>
-<h3><code>unicodeSteganographer.setUseChars</code></h3>
+<h3><code>unicodeSteganographer.setUseChars(string)</code></h3>
 <div>
-<code>unicodeSteganographer.setUseChars</code> sets the characters for steganography.<br />
+<code>setUseChars</code> sets the characters for steganography as a string.<br />
 Default characters used for steganography are U+200C, U+200D, U+202C, and U+FEFF.<br />
-U+200B is deleted in Gmail when a mail is sent.<br />
+U+200B(ZERO WIDTH SPACE) is deleted in Gmail when sending a mail from browser.<br />
 <br />
 <h2>Supported Browsers</h2>
 <ul>
