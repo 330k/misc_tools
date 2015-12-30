@@ -42,14 +42,20 @@ Hidden Text: <button id="hidden_clear">Clear</button> <span id="hidden_length"><
 </div>
 </td>
 <td style="width: 10%; text-align: center;">
-<button id="encode">Encode-&gt;</button><br /><br />
-<button id="decode">&lt;-Decode</button>
+<button id="encode">Encode &raquo;</button><br /><br />
+<button id="decode">&laquo; Decode</button>
 </td>
 <td style="width: 45%; vertical-align: top;">
 <div>
 Output: <button id="output_clear">Clear</button> <span id="output_length"></span>
 <textarea id="output" class="right"></textarea>
 </div>
+</td>
+</tr>
+<tr>
+<td colspan="3">
+Characters for steganography: <br />
+<div id="used_chars"></div>
 </td>
 </tr>
 </table>
@@ -104,6 +110,44 @@ document.getElementById('hidden_clear').addEventListener('click', (function(){
 document.getElementById('output_clear').addEventListener('click', (function(){
     document.getElementById('output').value = '';
 }));
+
+var chars = [
+    {'char':'\u200b', 'checked':false, 'name': 'ZERO WIDTH SPACE'},
+    {'char':'\u200c', 'checked':true,  'name': 'ZERO WIDTH NON-JOINER'},
+    {'char':'\u200d', 'checked':true,  'name': 'ZERO WIDTH JOINER'},
+    {'char':'\u200e', 'checked':false, 'name': 'LEFT-TO-RIGHT MARK'},
+    {'char':'\u202a', 'checked':false, 'name': 'LEFT-TO-RIGHT EMBEDDING'},
+    {'char':'\u202c', 'checked':true,  'name': 'POP DIRECTIONAL FORMATTING'},
+    {'char':'\u202d', 'checked':false, 'name': 'LEFT-TO-RIGHT OVERRIDE'},
+    {'char':'\ufeff', 'checked':true,  'name': 'ZERO WIDTH NO-BREAK SPACE'}
+];
+for(var i = 0; i < chars.length; i++ ){
+    var e1 = document.createElement('label');
+    var e2 = document.createElement('input');
+    var e3 = document.createTextNode('U+' + chars[i].char.charCodeAt(0).toString(16).toUpperCase() + ' ' + chars[i].name);
+    var e4 = document.createElement('br');
+    
+    e2.type = 'checkbox';
+    e2.value = chars[i].char;
+    e2.checked = chars[i].checked;
+    e2.addEventListener('change', function(){
+        var input = document.getElementsByTagName('input');
+        var chars = '';
+        for(var j = 0; j < input.length; j++){
+            if((input[j].type == 'checkbox') && (input[j].checked != false)){
+                chars += input[j].value;
+            }
+        }
+        unicodeSteganographer.setUseChars(chars);
+    });
+    
+    e1.appendChild(e2);
+    e1.appendChild(e3);
+    e1.appendChild(e4);
+    
+    document.getElementById('used_chars').appendChild(e1);
+}
+document.getElementById
 
 window.setInterval(function(){
     document.getElementById('input_length').innerText = '(length: ' + document.getElementById('input').value.length + ')';
