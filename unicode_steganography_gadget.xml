@@ -42,7 +42,7 @@ Hidden Text: <button id="hidden_clear">Clear</button> <span id="hidden_length"><
 </td>
 <td style="width: 45%; vertical-align: top;">
 <div>
-Output: <button id="output_clear">Clear</button> <span id="output_length"></span>
+Steganography Text: <button id="output_clear">Clear</button> <span id="output_length"></span>
 <textarea id="output" class="right"></textarea>
 </div>
 </td>
