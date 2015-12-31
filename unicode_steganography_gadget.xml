@@ -37,8 +37,8 @@ Hidden Text: <button id="hidden_clear">Clear</button> <span id="hidden_length"><
 </div>
 </td>
 <td style="width: 10%; text-align: center;">
-<button id="encode">Encode</button><br /><br />
-<button id="decode">Decode</button>
+<button id="encode">Encode &raquo;</button><br /><br />
+<button id="decode">&laquo; Decode</button>
 </td>
 <td style="width: 45%; vertical-align: top;">
 <div>
