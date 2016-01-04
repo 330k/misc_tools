@@ -4,7 +4,7 @@
  *  This software is released under the MIT License.
  *  http://opensource.org/licenses/mit-license.php
  */
-(function(){
+(function(exports){
     var chars = [];
     var radix = 0;
     var codelength = 0;
@@ -103,11 +103,11 @@
     
     setUseChars('\u200c\u200d\u202c\ufeff');
     
-    window.unicodeSteganographer = {
+    exports.unicodeSteganographer = {
         encodeSteganography: encodeSteganography,
         decodeSteganography: decodeSteganography,
         setUseChars: setUseChars
     };
     
     return null;
-})();
+})(this);
