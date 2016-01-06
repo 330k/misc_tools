@@ -5,6 +5,7 @@
  *  http://opensource.org/licenses/mit-license.php
  */
 (function(exports){
+    'use strict';
     var chars = [];
     var radix = 0;
     var codelength = 0;
@@ -47,9 +48,9 @@
                 result[i] = (base + d).substr(-codelength);
             }
             
-            var r = result.join('');
+            r = result.join('');
             
-            for(var i = 0; i < radix; i++){
+            for(i = 0; i < radix; i++){
                 r = r.replace(new RegExp(i, 'g'), chars[i]);
             }
             
