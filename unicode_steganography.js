@@ -29,15 +29,20 @@
     var encodeSteganography = function(text1, text2){
         var encode_to_zerowidth_characters = (function(str1){
             var result = [];
-            //var base = '0'.repeat(codelength); // IE not support this method
             var base = '';
-            for(var i = 0; i < codelength; i++){
+            var i;
+            var c;
+            var d;
+            var r;
+            
+            //var base = '0'.repeat(codelength); // IE not support this method
+            for(i = 0; i < codelength; i++){
                 base += '0';
             }
             
-            for(var i = 0; i < str1.length; i++){
-                var c = str1.charCodeAt(i);
-                var d = c.toString(radix);
+            for(i = 0; i < str1.length; i++){
+                c = str1.charCodeAt(i);
+                d = c.toString(radix);
                 
                 result[i] = (base + d).substr(-codelength);
             }
@@ -85,11 +90,12 @@
         });
         var decode_from_zero_width_characters = (function(str1){
             var r = str1;
-            for(var i = 0; i < radix; i++){
+            var i;
+            var result;
+            for(i = 0; i < radix; i++){
                 r = r.replace(new RegExp(chars[i], 'g'), i);
             }
-            var result = [];
-            for(var i = 0; i < r.length; i += codelength){
+            for(i = 0; i < r.length; i += codelength){
                 result.push(String.fromCharCode(parseInt(r.substr(i, codelength), radix)));
             }
             
