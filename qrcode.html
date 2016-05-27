@@ -1,0 +1,91 @@
+<html>
+<head>
+<title>Online QR Code Generator with Google Chart API by 330k</title>
+</head>
+<script type="text/javascript">
+//var result_org;
+window.onunload = function(){
+};
+window.onresize = function(){
+	document.all.result.style.height = document.body.clientHeight - document.all.t1.clientHeight - document.all.status.clientHeight;
+};
+window.onload = function(){
+	window.onresize();
+	document.all.qrcontent.focus();
+
+	var result_org = document.all.result.innerHTML;
+	window.clearResult = function(){
+		document.all.result.innerHTML = result_org;
+	};
+};
+
+function generateQR( size, text, level, oe ){
+	var e_img = document.createElement("img");
+	e_img.setAttribute(
+		"src",
+		"http://chart.apis.google.com/chart?cht=qr" 
+		 + "&chs=" + size + "x" + size
+		 + "&chld=" + level
+		 + "&choe=" + oe
+		 + "&chl=" + encodeURI(text)
+	);
+	e_img.setAttribute("title", encodeURI(text));
+	e_img.setAttribute("width", size);
+	e_img.setAttribute("height", size);
+	var e_tr = document.createElement('tr');
+	var e_td1 = document.createElement('td');
+	var e_td2 = document.createElement('td');
+//	e_td1.appendChild(document.createElement('pre').appendChild(document.createTextNode(text)));
+	e_td1.innerText = text;
+	e_tr.appendChild(e_td1);
+	e_tr.appendChild(e_td2);
+	e_td2.appendChild(e_img);
+	document.getElementById("tbody_result").appendChild(e_tr);
+}
+
+</script>
+<style type="text/css">
+*	{ margin: 0; padding: 0; font-family: sans-serif; font-size: 10pt; }
+td	{ vertical-align: bottom; }
+textarea	{ font-family: FixedSys,monospace; font-size: 10pt; }
+button	{ width: 100px; font-size: 9pt;}
+#result table	{ border-collapse: collapse; border: 1px solid black; }
+#result td,th	{ border: 1px solid black; vertical-align: top; }
+#result th	{ background: rgb(192,192,192); }
+</style>
+<body>
+<form id="f1" onsubmit="generateQR(document.all.qrsize.value, document.all.qrcontent.value, document.all.qrlevel.value, document.all.qrencode.value);return false;">
+<table id="t1" style="width:100%;padding:10px;">
+<tr>
+	<td>
+		Size: <input type="text" id="qrsize" size="10" value="150" />
+		Level: <select id="qrlevel">
+			<option value="L">L</option>
+			<option value="M">M</option>
+			<option value="Q">Q</option>
+			<option value="H" selected="selected">H</option>
+		</select>
+		Character Encode: <select id="qrencode">
+			<option value="UTF-8" selected="selected">UTF-8</option>
+			<option value="Shift_JIS">Shift_JIS</option>
+			<option value="ISO-8859-1">ISO-8859-1</option>
+		</select><br />
+		Content:<br />
+		<textarea id="qrcontent" style="width:100%; height:80px;"></textarea>
+	</td>
+	<td style="width:100px;">
+		<input type="submit" value="Generate" style="width:100%;" />
+		<input type="button" value="Clear" style="width:100%;" onclick="clearResult()" />
+	</td>
+</tr>
+</table>
+</form>
+<div id="result" style="width:100%;height:500px;overflow:auto;background:white;padding:10px;border-top:1px solid gray;">
+<table id="table_result">
+<thead><tr><th>Content</th><th>QR Code</th></tr></thead>
+<tbody id="tbody_result"></tbody>
+</table>
+</div>
+<div id="status" style="width:1980px;height:20px;overflow:hidden;"></div>
+</body>
+</html>

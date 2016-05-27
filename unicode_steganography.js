@@ -92,7 +92,7 @@
         var decode_from_zero_width_characters = (function(str1){
             var r = str1;
             var i;
-            var result;
+            var result = [];
             for(i = 0; i < radix; i++){
                 r = r.replace(new RegExp(chars[i], 'g'), i);
             }

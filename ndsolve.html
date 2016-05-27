@@ -1,0 +1,638 @@
+<html>
+<head>
+<title>NDSolve by 330k</title>
+</head>
+<script type="text/javascript">
+var result = [];
+ 
+// Register Mathematical functions
+with({items:[
+	'E','LN10','LN2','LOG10E','LOG2E','PI','SQRT1_2','SQRT2',
+	'abs','acos','asin','atan','atan2','ceil','cos','exp',
+	'log','max','min','pow','random','sin','sqrt','tan'
+	]}){
+	for(var i in items){
+		window[items[i]] = Math[items[i]];
+	}
+}
+ 
+window.onunload = function(){
+};
+window.onresize = function(){
+};
+window.onload = function(){
+	window.onresize();
+};
+Array.prototype.clone = function(){
+	var a = [];
+	for(var i = 0; i < this.length; i++){
+		a[i] = this[i];
+	}
+	return a;
+};
+ 
+function ndSolve(){
+	var dydt;
+	var t;
+	var y;
+	var dt;
+	var t0;
+	var t1;
+	var i;
+	var method;
+	var solver;
+ 
+	setStatusText('');
+	var times = [new Date()];
+ 
+	try{
+		dydt = eval('dydt = function(t, y){' + document.getElementById('dydt').textContent + '};');
+	}catch( e ){
+		alert('function dydt(t, y) has a syntax error.');
+		return;
+	}
+	try{
+		y = eval('y = [' + document.getElementById('y0').value + ']');
+	}catch( e ){
+		alert('Initial Value has a syntax error.');
+		return;
+	}
+	try{
+		dt = eval('dt = (' + document.getElementById('dt').value + ') - 0');
+		t0 = eval('t0 = (' + document.getElementById('t0').value + ') - 0');
+		t1 = eval('t1 = (' + document.getElementById('t1').value + ') - 0');
+	}catch( e ){
+		alert('dt, t0 or t1 has a syntax error.');
+		return;
+	}
+	method = solvers[document.getElementById('method').value];
+	solver = window[method.solver];
+ 
+	// Initial Conditions
+	t = t0;
+	clearResult();
+	logResult(t, y);
+	
+	// Calculate
+	var count = 0;
+	setStatusText('Calculating...');
+	(function(){
+		while( true ){
+			if(((t0 <= t) && (t < t1)) || ((t1 < t) && (t <= t0))){
+				var tmp = solver(y, dydt, t, dt, method);
+				t = tmp[0];
+				y = tmp[1];
+				logResult(t, y);
+				count++;
+				if( count == 1000 ){
+					count = 0;
+					setStatusText('Calculating... (t = ' + t + ')');
+					setTimeout( arguments.callee, 10 );
+					break;
+				}
+			}else{
+				times.push( new Date() );
+ 
+				showResult('exponential');
+				times.push( new Date() );
+				
+				drawGraph();
+				setStatusText("Calculation Time: " + (times[1] - times[0])
+						+ "ms,\tResult Output Time: " + (times[2] - times[1]) + "ms");
+				break;
+			}
+		}
+	})();
+}
+ 
+/* NDSolve methods */
+var solvers = {
+	"rk1_euler": {
+		"solver": "explicitRK",
+		"a": [0],
+		"b": [
+			[1]
+		]
+	},
+	"rk2_heun": {
+		"solver": "explicitRK",
+		"a": [0,1],
+		"b": [
+			[1],
+			[0.5,0.5]
+		]
+	},
+	"rk3_ralston": {
+		"solver": "explicitRK",
+		"a": [0,0.5,1],
+		"b": [
+			[0.5],
+			[-1,2],
+			[1/6,2/3,1/6]
+		]
+	},
+	"rk4_classic": {
+		"solver": "explicitRK",
+		"a": [0,0.5,0.5,1],
+		"b": [
+			[0.5],
+			[0,0.5],
+			[0,0,1],
+			[1/6,1/3,1/3,1/6]
+		]
+	},
+	"rk5_nystroem": {
+		"solver": "explicitRK",
+		"a": [0,1/3,2/5,1,2/3,4/5],
+		"b": [
+			[1/3],
+			[4/25,6/25],
+			[1/4,-3,15/4],
+			[2/27,10/9,-50/81,8/81],
+			[2/25,12/25,2/15,8/75,0],
+			[23/192,0,125/192,0,-27/64,125/192]
+		]
+	},
+	"rk6_hammud": {
+		"solver": "explicitRK",
+		"a": [0,0.5714285714285714,0.7142857142857143,0.8571428571428571,0.2763932022500210,0.7236067977499790,1.000000000000000],
+		"b": [
+			[0.5714285714285714,0,0,0,0,0,0],
+			[1.026785714285714,-0.3125000000000000,0,0,0,0,0],[0.9349206349206349,0.2777777777777778,-0.3555555555555556,0,0,0,0],
+			[0.1800256714420843,0.1473794068396161,0.01607016329331427,-0.06708203932499369,0,0,0],
+			[-0.07979765856603138,0.02529059199899260,-0.3516326202266812,0.3207294901687516,0.8090169943749474,0,0],
+			[0.4988599356197351,-0.8633499941930435,1.677812284666835,-1.268237254218789,-0.4270509831248423,1.381966011250105,0],
+			[0.08333333333333333,0,0,0,0.4166666666666667,0.4166666666666667,0.08333333333333333]
+		]
+	},
+	"rk7_shanks": {
+		"solver": "explicitRK",
+		"a": [0,0.2222222222222222,0.3333333333333333,0.5000000000000000,0.1666666666666667,0.8888888888888889,0.1111111111111111,0.8333333333333333,1.000000000000000],
+		"b": [
+			[0.2222222222222222,0,0,0,0,0,0,0,0],
+			[0.08333333333333333,0.2500000000000000,0,0,0,0,0,0,0],
+			[0.1250000000000000,0,0.3750000000000000,0,0,0,0,0,0],
+			[0.1064814814814815,0,0.09722222222222222,-0.03703703703703704,0,0,0,0,0],
+			[-5.673525377229081,0,-18.63374485596708,7.220850480109739,17.97530864197531,0,0,0,0],
+			[0.6933299039780521,0,1.991769547325103,-0.7105624142661180,-1.874643874643875,0.01121794871794872,0,0,0],
+			[-0.5634259259259259,0,-2.013888888888889,1.261073318216175,1.851282051282051,0.05951726844583987,0.2387755102040816,0,0],
+			[0.09356936416184971,0,-0.4855491329479769,-0.08092485549132948,2.761227212094264,-0.3964976497490948,-1.852251794448326,0.9604268563806136,0],
+			[0.05148809523809524,0,0,0.3587949465500486,0.2967032967032967,-0.02758886521641624,-0.02758886521641624,0.2967032967032967,0.05148809523809524]
+		]
+	},
+	"rk8_cooperverner": {
+		"solver": "explicitRK",
+		"a": [0,0.5000000000000000,0.5000000000000000,0.1726731646460114,0.1726731646460114,0.5000000000000000,0.8273268353539886,0.8273268353539886,0.5000000000000000,0.1726731646460114,1.000000000000000],
+		"b": [
+			[0.5000000000000000,0,0,0,0,0,0,0,0,0,0],
+			[0.2500000000000000,0.2500000000000000,0,0,0,0,0,0,0,0,0],
+			[0.1428571428571429,0.06885435800885225,-0.03903833621998367,0,0,0,0,0,0,0,0],
+			[0.07639790839338286,0,-0.005242901267037461,0.1015181575196660,0,0,0,0,0,0,0],
+			[0.008696339688420000,0,0.1227062306956711,-0.8198779436927271,1.188475373308636,0,0,0,0,0,0],
+			[0.3472041832132343,0,-2.709831631542658,14.41637195298441,-14.72851721314174,3.502099543840741,0,0,0,0,0],
+			[0.07142857142857143,0,0,0,0.2202200562291073,0.4245670965851987,0.1111111111111111,0,0,0,0],
+			[0.03125000000000000,0,0,0,0.3250591833230428,0.1527777777777778,-0.03585661708186806,0.02676965598104750,0,0,0],
+			[0.07142857142857143,0,0,0,0.1111111111111111,-0.02692125752448595,0.01256765448393206,-0.01056548849081714,0.01505257363769992,0,0],
+			[0,0,0,0,-4.115446103593938,-3.251380432416967,-0.4183817801019511,0.8072706689908400,3.473602654639189,4.504334992482827,0],
+			[0.05000000000000000,0,0,0,0,0,0,0.2722222222222222,0.3555555555555556,0.2722222222222222,0.05000000000000000]
+		]
+	},
+	"rk9_verner": {
+		"solver": "explicitRK",
+		"a": [0,0.08333333333333333,0.1111111111111111,0.1666666666666667,0.4599319657044237,0.5632993161855452,0.2367006838144548,0.6666666666666667,0.5000000000000000,0.3333333333333333,0.2500000000000000,1.333333333333333,0.8333333333333333,1.000000000000000,0.1666666666666667,1.000000000000000],
+		"b": [
+			[0.08333333333333333,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0.03703703703703704,0.07407407407407407,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0.04166666666666667,0,0.1250000000000000,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0.6246720955243166,0,-2.398057107150296,2.233316977330403,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0.04367006838144548,0,0,0.2739534538730258,0.2456757939310740,0,0,0,0,0,0,0,0,0,0,0],
+			[0.06162164740338976,0,0,0.1815318224122804,-0.01347768961114963,0.007024903609934228,0,0,0,0,0,0,0,0,0,0],
+			[0.07407407407407407,0,0,0,0,0.2509353751336449,0.3416572174589477,0,0,0,0,0,0,0,0,0],
+			[0.07421875000000000,0,0,0,0,0.1204330779609119,0.3405044220390881,-0.03515625000000000,0,0,0,0,0,0,0,0],
+			[0.07638888888888889,0,0,0,0,0.3050353127977047,0.3107054279430361,-0.06250000000000000,-0.2962962962962963,0,0,0,0,0,0,0],
+			[0.07112936653166925,0,0,0,0,0,0.3785282888900930,-0.01174633003502325,0.07272054197316798,-0.2606318673599070,0,0,0,0,0,0],
+			[-8.141639713875007,0,0,0,0,-574.4363925623016,413.4855110109495,113.7192018693195,626.9414848978770,-241.5434741439447,-328.6913580246914,0,0,0,0,0],
+			[0.08780375928196306,0,0,0,0,0.6933735017302034,-1.903097889801755,0.2288633886845547,-0.6904282483666235,-0.07691188807155204,2.491927825261159,0.001802884615384615,0,0,0,0],
+			[-0.1057098765432099,0,0,0,0,5.574678190604247,7.485506994580939,-6.229166666666667,2.271604938271605,-4.888888888888889,-4.862298195631529,-0.02350427350427350,1.777777777777778,0,0,0],
+			[0.05460359999545924,0,0,0,0,-0.2727188815085157,0.07519616653023355,-0.1254601777369109,0.7010486126362877,-0.8679509557190229,0.5643738977072310,-0.0005208333333333333,0.03809523809523810,0,0,0],
+			[-0.3964016905327433,0,0,0,0,-5.456847418559753,6.815249220325201,1.381027231962072,3.730795461620606,7.805290213782615,-18.70628370199186,-0.002872235061076263,0.4223175965665236,0,5.407725321888412,0],
+			[0.04380952380952381,0,0,0,0,0,0,0.1221428571428571,0.1638095238095238,0.3321428571428571,-0.3000732600732601,-0.0001648351648351648,0.2228571428571429,0,0.3600000000000000,0.05547619047619048]
+		]
+	},
+	"irk1_backeuler": {
+		"solver": "backwardEuler"
+	},
+	"irk2_midpoint": {
+		"solver": "implicitMidPoint"
+	},
+	"irk3_trapezoidal": {
+		"solver": "semiImplicitRK",
+		"a": [0,1],
+		"b": [
+			[0,0],
+			[0.5,0.5],
+			[0.5,0.5]
+		]
+	}
+};
+ 
+function explicitRK(y0, dydt, t, dt, butcher){
+	var ny = y0.length;
+	var a = butcher.a;
+	var b = butcher.b;
+	var m = a.length;
+	
+	var y = [y0];
+	var k = [];
+	
+	for(var i = 0; i < m; i++){
+		y[i + 1] = [];
+		k[i] = dydt(t + a[i] * dt, y[i]);
+		for(var j = 0; j < ny; j++){
+			var tmp_k = 0.;
+			for(var l = 0; l <= i; l++){
+				tmp_k += b[i][l] * k[l][j];
+			}
+			y[i + 1][j] = y0[j] + tmp_k * dt;
+		}
+	}
+	
+	return [t + dt, y[m]];
+}
+function semiImplicitRK(y0, dydt, t, dt, butcher){
+	var ny = y0.length;
+	var a = butcher.a;
+	var b = butcher.b;
+	var m = a.length;
+	
+	var y = [y0];
+	var tmp_y0 = [];
+	var tmp_y1 = [];
+	var tmp_y2 = [];
+	var error = 0.0;
+	var k = [];
+	
+	for(var i = 0; i < m; i++){
+		tmp_y0 = y0.clone();
+		for(var c = 0; c < 10; c++){
+			k[i] = dydt(t + a[i] * dt, tmp_y0);
+			for(var j = 0; j < ny; j++){
+				var tmp_k = 0.;
+				for(var l = 0; l <= i; l++){
+					tmp_k += b[i][l] * k[l][j];
+				}
+				tmp_y1[j] = y0[j] + tmp_k * dt;
+				
+				tmp_y2[j] = tmp_y1[j] - (k[i][j] + tmp_y0[j] - tmp_y1[j]) / ((k[i][j]) / (tmp_y1[j] - tmp_y0[j]));
+				
+			}
+		}
+		y[i + 1] = tmp_y2;
+	}
+	
+	return [t + dt, y[m]];
+}
+function backwardEuler(y0, dydt, t, dt, butcher){
+	var ny = y0.length;
+	var tmp_y = [];
+	var k = [];
+	
+	tmp_y[0] = y0;
+	for(var i = 0; i < 20; i++){
+		var error = 0;
+		tmp_y[i + 1] = [];
+		k[i] = dydt(t + dt, tmp_y[i]);
+		for(var j = 0; j < ny; j++){
+			tmp_y[i + 1][j] = y0[j] + k[i][j] * dt;
+			error += Math.abs(tmp_y[i + 1][j] - tmp_y[i][j]);
+		}
+		if( error < 1e-8 ){
+			break;
+		}
+	}
+	return [t + dt, tmp_y[tmp_y.length - 1]];
+	/*
+	var tmp_y0;
+	var tmp_y1 = [];
+	var tmp_k;
+	tmp_y0 = y0;
+	tmp_k = dydt(t + dt, tmp_y0);
+	for(var j = 0; j < ny; j++){
+		tmp_y1[j] = y0[j] + tmp_k[j] * dt;
+	}
+	var res = secant( function(x){ return y0.plus(dydt(t + dt, x).times(dt)).minus(x); }, tmp_y0, tmp_y1 );
+	alert(res);
+	return [t + dt, res];*/
+}
+function implicitMidPoint(y0, dydt, t, dt, butcher){
+	var ny = y0.length;
+	var y = [];
+	var tmp_y = [];
+	var k = [];
+	
+	tmp_y[0] = y0;
+	for(var i = 0; i < 20; i++){
+		var error = 0;
+		tmp_y[i + 1] = [];
+		k[i] = dydt(t + 0.5 * dt, tmp_y[i]);
+		for(var j = 0; j < ny; j++){
+			tmp_y[i + 1][j] = y0[j] + k[i][j] * dt *0.5;
+			error += Math.abs(tmp_y[i + 1][j] - tmp_y[i][j]);
+		}
+		if( error < 1e-8 ){
+			break;
+		}
+	}
+	
+	for(var j = 0; j < ny; j++){
+		y[j] = y0[j] + k[k.length - 1][j] * dt;
+	}
+	return [t + dt, y];
+}
+
+Array.prototype.plus = function(x){
+	var a = [];
+	for(var i = 0; i < this.length; i++){
+		a[i] = this[i] + x[i];
+	}
+	return a;
+};
+Array.prototype.minus = function(x){
+	var a = [];
+	for(var i = 0; i < this.length; i++){
+		a[i] = this[i] - x[i];
+	}
+	return a;
+};
+Array.prototype.times = function(x){
+	var a = [];
+	if(x instanceof Array){
+		for(var i = 0; i < this.length; i++){
+			a[i] = this[i] * x[i];
+		}
+	}else{
+		for(var i = 0; i < this.length; i++){
+			a[i] = this[i] * x;
+		}
+	}
+	return a;
+};
+Array.prototype.divide = function(x){
+	var a = [];
+	for(var i = 0; i < this.length; i++){
+		a[i] = this[i] / x[i];
+	}
+	return a;
+};
+Array.prototype.norm = function(){
+	var a = 0;
+	for(var i = 0; i < this.length; i++){
+		a += this[i] * this[i];
+	}
+	return Math.sqrt(a);
+};
+function secant(func, x0, x1){
+	var f0 = func(x0);
+	var f1 = func(x1);
+	var x2, f2;
+	var F = [];
+	
+	for(var i = 0; i < 100; i++){
+		x2 = x1.minus( f1.times(x1.minus(x0)).divide(f1.minus(f0)) );
+		for(var j = 0; j < x0.length; j++){
+			F[j] = [];
+			for(var k = 0; k < x0.length; k++){
+				F[j][k] = (f1[j] - f0[j]) / (x1[k] - x0[k]);
+			}
+		}
+		alert(F);
+		//x2 = x1.minus(inverse(F));
+		f2 = func(x2);
+		if( x2.minus(x1).divide(x2).norm() < 1e-8 ){
+			break;
+		}else{
+			x0 = x1;
+			x1 = x2;
+			f0 = f1;
+			f1 = f2;
+		}
+	}
+	
+	return x2;
+}
+Array.prototype.inverse = function(){
+	var	a=this;
+	var	c=a.length;
+	var	buf;
+	var	i,j,k;
+	
+	var	inv=new	Array(c);
+	for(i=0;i<c;i++){
+		inv[i]=new	Array(c);
+		for(j=0;j<c;j++){
+			inv[i][j]=(i==j)?1.0:0.0;
+		}
+	}
+	for(i=0;i<c;i++){
+		buf=1/a[i][i];
+		for(j=0;j<c;j++){
+			a[i][j]*=buf;
+			inv[i][j]*=buf;
+		}
+		for(j=0;j<c;j++){
+			if(i!=j){
+				buf=a[j][i];
+				for(k=0;k<c;k++){
+					a[j][k]-=a[i][k]*buf;
+					inv[j][k]-=inv[i][k]*buf;
+				}
+			}
+		}
+	}
+	return(inv);
+}
+
+/* Result */
+function logResult(t, y){
+	result.push([t].concat(y));
+}
+function showResult(format){
+	var buf = [];
+	
+	switch(format){
+	case 'exponential':
+		for(var i = 0; i < result.length; i++){
+			buf[i] = [];
+			for(var j = 0; j < result[i].length; j++){
+				buf[i][j] = result[i][j].toExponential(16);
+			}
+			buf[i] = buf[i].join('\t');
+		}
+		break;
+	default:
+		buf = result;
+	}
+	document.getElementById('result').value = 't\t[y]\n' + buf.join('\n').replace(/,/g,'\t');
+}
+
+function clearResult(){
+	document.getElementById('result').value = "";
+	result = [];
+}
+
+function setStatusText( mes ){
+	document.getElementById('status').innerHTML = mes;
+}
+ 
+/* Condition */
+function saveCondition(){
+	var items = ['dydt','dt','t0','t1','y0','method'];
+	var buf = [];
+ 
+	for(var i = 0; i < items.length; i++){
+		buf.push('"' + items[i] + '":"'
+			+ document.getElementById(items[i]).value.replace(/\"/g,'\\"').replace(/\n/g,'\\n').replace(/\r/g,'\\r').replace(/\f/g,'\\f')
+			+ '"');
+	}
+ 
+	//clipboardData.setData("Text", '{' + buf.join(',') + '}'); 
+}
+ 
+function loadCondition(){
+	var data;
+	try{
+		eval("data = " + clipboardData.getData("Text") + ";");
+		for(var prop in data){
+			document.getElementById(prop).value = data[prop];
+		}
+ 
+	}catch(e){
+	}
+}
+ 
+/* Graph */
+function drawGraph(){
+	if(result.length <= 0){
+		return;
+	}
+	
+	var cv = document.getElementById('canvas_graph');
+	var ctx = cv.getContext('2d');
+	
+	var width = document.getElementById('canvas_graph').clientWidth;
+	var height = document.getElementById('canvas_graph').clientHeight;
+	var amp_x = width / (result[result.length - 1][0] - result[0][0]);
+	var y_max = Number.MIN_VALUE;
+	var y_min = Number.MAX_VALUE;
+	
+	var result2 = spliceResult(width);
+	
+	for(var i = 1; i < result2[0].length; i++){
+		for(var j = 0; j < result2.length; j++){
+			if( result2[j][i] > y_max ){
+				y_max = result2[j][i];
+			}
+			if( result2[j][i] < y_min ){
+				y_min = result2[j][i];
+			}
+		}
+	}
+	var amp_y = height / (y_max - y_min);
+	
+	var colorList = [
+		'rgb(79,129,189)',
+		'rgb(192,80,77)',
+		'rgb(155,187,89)',
+		'rgb(128,100,162)',
+		'rgb(75,172,198)',
+		'rgb(247,150,70)'
+	];
+	
+	cv.width = width;
+	cv.height = height;
+	
+	ctx.clearRect(0, 0, width, height);
+	ctx.fillStyle = 'rgba(255,255,255,0.7)';
+	ctx.fillRect(0, 0, width, height);
+	
+	for(var i = 1; i < result2[0].length; i++){
+		ctx.beginPath();
+		ctx.strokeStyle = colorList[(i-1) % colorList.length];
+		ctx.moveTo((result2[0][0] - result[0][0]) * amp_x, height - (result2[0][i] - y_min) * amp_y);
+		for(var j = 1; j < result2.length; j++){
+			ctx.lineTo((result2[j][0] - result[0][0]) * amp_x, height - (result2[j][i] - y_min) * amp_y);
+		}
+		ctx.stroke();
+	}
+}
+ 
+function spliceResult(num){
+	var buf = [];
+	var rn = result.length;
+	
+	if(rn > num){
+		for(var j = 0; j < num; j++){
+			buf.push(result[Math.floor(j * rn / num)]);
+		}
+	}else{
+		buf = result;
+	}
+	
+	return buf;
+}
+</script>
+<style type="text/css">
+*	{ margin: 0; padding: 0; font-family: sans-serif; font-size: 10pt; }
+html,body	{ height:100%; }
+table	{ border: 0; border-collapse: collapse; cell-spacing: 0px; }
+td	{ vertical-align: top; }
+textarea	{ font-family: FixedSys,monospace; font-size: 10pt; }
+button	{ height: 25px; width: 100px; font-size: 9pt;}
+</style>
+<body>
+<table style="width:100%;height:100%;">
+<tr style="height:150px;"><td>
+<table style="width:100%;height:100%;">
+<tr>
+	<td>
+		function dydt(t, [y[0], y[1], y[2], ...]){<br />
+		<textarea id="dydt" style="width:100%;height:120px;" wrap="off">return [y[1],-y[0]];</textarea><br />
+		}<br />
+		dt = <input type="text" id="dt" value="PI / 20" size="10" />
+		t0 = <input type="text" id="t0" value="0" size="10" />
+		t1 = <input type="text" id="t1" value="10 * PI" size="10" /><br />
+		Initial Value(s) = [<input type="text" id="y0" value="1,0" size="40" />]<br />
+		Method: <select id="method">
+			<option value="rk1_euler">Explicit RK1 Euler</option>
+			<option value="rk2_heun">Explicit RK2 Heun</option>
+			<option value="rk3_ralston">Explicit RK3 Ralston</option>
+			<option value="rk4_classic" selected="selected">Explicit RK4 Classical</option>
+			<option value="rk5_nystroem">Explicit RK5 Nystroem</option>
+			<option value="rk6_hammud">Explicit RK6 Hammud</option>
+			<option value="rk7_shanks">Explicit RK7 Shanks</option>
+			<option value="rk8_cooperverner">Explicit RK8 Cooper &amp; Verner</option>
+			<option value="rk9_verner">Explicit RK9 Verner</option>
+			<option value="irk1_backeuler">Implicit RK1 Backward Euler</option>
+			<option value="irk2_midpoint">Implicit RK2 Mid Point</option>
+		</select>
+	</td>
+	<td style="width:100px">
+		<button onclick="saveCondition()">Save Condition</button><br />
+		<button onclick="loadCondition()">Load Condition</button><br />
+		<br />
+		<button onclick="ndSolve()">NDSolve</button><br />
+		<button onclick="clearResult()">Clear</button>
+	</td>
+</tr>
+</table>
+</td></tr>
+<tr><td>
+<textarea id="result" style="width:100%;height:50%;overflow:scroll;background:white;padding:10px;border-top:1px solid gray;" wrap="off" rows="5" readonly="readonly"></textarea>
+<canvas id="canvas_graph" width="400" height="300" style="left:0px;width:100%;height:50%;"></canvas>
+</td></tr>
+<tr style="height:20px;"><td>
+<div id="status" style="width:100%;height:100%;overflow:hidden;"></div>
+</td></tr>
+</table>
+</body>
+</html>
