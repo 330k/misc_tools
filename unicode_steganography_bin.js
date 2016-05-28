@@ -18,17 +18,19 @@
     if(newchars.length >= 2){
       chars = newchars.split('');
       radix = chars.length;
-      codelength = Math.ceil(Math.log(65536) / Math.log(radix));
+      codelength = Math.ceil(Math.log(256) / Math.log(radix));
     }
     return null;
   };
   /**
     Encoder
-    args: original text, hidden text
+    args:
+      text: original text to be embedded (String)
+      data: data to be hidden (Uint8Array)
     return: unicode text with steganography
    */
-  var encodeSteganography = function(text1, text2){
-    var encode_to_zerowidth_characters = (function(str1){
+  var encodeSteganography = function(text, data){
+    var encode_to_zerowidth_characters = (function(aryu8){
       var result = [];
       var base = '';
       var i;
@@ -41,9 +43,8 @@
         base += '0';
       }
       
-      for(i = 0; i < str1.length; i++){
-        c = str1.charCodeAt(i);
-        d = c.toString(radix);
+      for(i = 0; i < aryu8.length; i++){
+        d = aryu8[i].toString(radix);
         
         result[i] = (base + d).substr(-codelength);
       }
@@ -64,7 +65,7 @@
       
       while((c1.length > 0) && (c2.length > 0)){
         if(Math.random() <= ratio){
-          result.push(c1.shift());
+            result.push(c1.shift());
         }else{
           result.push(c2.shift());
         }
@@ -73,39 +74,47 @@
       
       return result.join('');
     });
-    return combine_shuffle_string(text1, encode_to_zerowidth_characters(text2));
+    return combine_shuffle_string(text, encode_to_zerowidth_characters(data));
   };
   
   /**
     Decoder
-    args: unicode text with steganography
-    return: array of [original text, hidden text]
+    args: unicode text with steganography (String)
+    return: JavaScript Object {
+      originalText: original text (String),
+      hiddenData: hidden data (Uint8Array)
+    }
    */
-  var decodeSteganography = function(text1){
+  var decodeSteganography = function(text){
     var split_zerowidth_characters = (function(str1){
-      var result = [];
-      result[0] = str1.replace(new RegExp('[' + chars.join('') + ']', 'g'), '');
-      result[1] = str1.replace(new RegExp('[^' + chars.join('') + ']', 'g'), '');
+      var result = {};
+      result.originalText = str1.replace(new RegExp('[' + chars.join('') + ']', 'g'), '');
+      result.hiddenText = str1.replace(new RegExp('[^' + chars.join('') + ']', 'g'), '');
       
       return result;
     });
     var decode_from_zero_width_characters = (function(str1){
       var r = str1;
       var i;
-      var result = [];
+      var j = 0;
+      var result = new Uint8Array(Math.ceil(str1.length / codelength));
       for(i = 0; i < radix; i++){
         r = r.replace(new RegExp(chars[i], 'g'), i);
       }
       for(i = 0; i < r.length; i += codelength){
-        result.push(String.fromCharCode(parseInt(r.substr(i, codelength), radix)));
+        result[j] = parseInt(r.substr(i, codelength), radix);
+        j++;
       }
       
-      return result.join('');
+      return result;
     });
     
-    var result = split_zerowidth_characters(text1);
-    result[1] = decode_from_zero_width_characters(result[1]);
-    return result;
+    var splitted = split_zerowidth_characters(text);
+    
+    return {
+      'originalText': splitted.originalText,
+      'hiddenData': decode_from_zero_width_characters(splitted.hiddenText)
+    };
   };
   
   setUseChars('\u200c\u200d\u202c\ufeff');

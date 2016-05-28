@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<!--
+    Copyright (c) 2015 Kei Misawa
+
+    This software is released under the MIT License.
+
+    http://opensource.org/licenses/mit-license.php
+-->
+<head>
+<meta charset="utf-8"/>
+<title>Unicode Steganography with Zero-Width Characters</title>
+<style>
+table { width: 100%; }
+.left { width: 100%; height: 200px; }
+.right { width: 100%; height: 500px; }
+</style>
+</head>
+<body>
+<h1>Unicode Steganography with Zero-Width Characters</h1>
+<div>
+This is plain text steganography with zero-width characters of Unicode.<br />
+Zero-width characters is inserted within the words.<br />
+<br />
+JavaScript library is below.<br />
+<a href="http://330k.github.io/misc_tools/unicode_steganography.js">http://330k.github.io/misc_tools/unicode_steganography.js</a>
+</div>
+<hr style="width: 100%;" />
+<table>
+<tr>
+<td style="width: 45%;">
+<div>
+Original Text: <button id="input_clear">Clear</button> <span id="input_length"></span>
+<textarea id="input" class="left">The quick brown fox jumps over the lazy dog
+1234567890.:,;(*!?')
+いろはにほへと ちりぬるを
+色は匂へど 散りぬるを</textarea>
+</div>
+<label><input type="radio" name="input_type" id="input_type_text" checked="checked"/>Input from Text</label>
+<div>
+Hidden Text: <button id="hidden_clear">Clear</button> <span id="hidden_length"></span>
+<textarea id="hidden" class="left">Where am I?</textarea>
+</div>
+<label><input type="radio" name="input_type" id="input_type_file" />Input from File</label>
+<div>
+<input id="input_from_file" type="file" />
+<a id="download_link" download="download">Download as File</a>
+</div>
+</td>
+<td style="width: 10%; text-align: center;">
+<button id="encode">Encode &raquo;</button><br /><br />
+<button id="decode">&laquo; Decode</button>
+</td>
+<td style="width: 45%; vertical-align: top;">
+<div>
+Steganography Text: <button id="output_clear">Clear</button> <span id="output_length"></span>
+<textarea id="output" class="right"></textarea>
+</div>
+</td>
+</tr>
+<tr>
+<td colspan="3">
+Characters for steganography: <br />
+<div id="used_chars"></div>
+</td>
+</tr>
+</table>
+<hr style="width: 100%;" />
+<h2>Usage</h2>
+<h3><code>unicodeSteganographer.encodeSteganography(String, Uint8Array)</code></h3>
+<div>
+<code>encodeSteganography</code> returns a String which is embedded steganography of Uint8Array.
+</div>
+<h3><code>unicodeSteganographer.decodeSteganography(String)</code></h3>
+<div>
+<code>decodeSteganography</code> returns a JavaScript Object: { originalText: original text (String), hiddenData: hidden data (Uint8Array)}.
+</div>
+<h3><code>unicodeSteganographer.setUseChars(String)</code></h3>
+<div>
+<code>setUseChars</code> sets the characters for steganography as a String.<br />
+Default characters used for steganography are U+200C, U+200D, U+202C, and U+FEFF.<br />
+U+200B(ZERO WIDTH SPACE) is deleted in Gmail when sending a mail from browsers.<br />
+<br />
+<h2>Supported Browsers</h2>
+<ul>
+<li>Chromium 45 (Ubuntu 14.04 LTS)</li>
+<li>Firefox 42 (Ubuntu 14.04 LTS)</li>
+<li>Edge (Windows 10)</li>
+<li>Internet Explorer 11 (Windows 10)</li>
+<li>Safari (iOS 9.1)</li>
+<li>Chrome (Android 4.2)</li>
+</ul>
+</div>
+</body>
+<script type="text/javascript" src="unicode_steganography.js"></script>
+<script>
+'use strict';
+
+document.getElementById('encode').addEventListener('click', (function(){
+  var text1 = document.getElementById('input').value;
+  var text2 = document.getElementById('hidden').value;
+  var reader = new FileReader();
+  
+  var blob;
+  
+  if(document.getElementById('input_type_text').checked){
+    blob = new Blob([text2]);
+  }else if(typeof document.getElementById('input_from_file').files[0] !== 'undefined'){
+    blob = document.getElementById('input_from_file').files[0];
+  }else{
+    return false;
+  }
+  
+  reader.onload = function(){
+    document.getElementById('output').value = unicodeSteganographer.encodeSteganography(text1, new Uint8Array(reader.result));
+  };
+  reader.readAsArrayBuffer(blob);
+}));
+document.getElementById('decode').addEventListener('click', (function(){
+  var text1 = document.getElementById('output').value;
+  var result = unicodeSteganographer.decodeSteganography(text1);
+  
+  document.getElementById('input').value = result.originalText;
+  
+  var reader = new FileReader();
+  reader.onload = function(){
+    document.getElementById('hidden').value = reader.result;
+  };
+  reader.readAsText(new Blob([result.hiddenData]), {type: 'text/plain;charset=UTF-8'});
+  
+  var blob = new Blob([result.hiddenData], {type: 'application/octet-binary'});
+  var blobURL = URL.createObjectURL(blob);
+  document.getElementById('download_link').href = blobURL;
+}));
+document.getElementById('input_clear').addEventListener('click', (function(){
+  document.getElementById('input').value = '';
+}));
+document.getElementById('hidden_clear').addEventListener('click', (function(){
+  document.getElementById('hidden').value = '';
+}));
+document.getElementById('output_clear').addEventListener('click', (function(){
+  document.getElementById('output').value = '';
+}));
+
+document.getElementById('input_from_file').addEventListener('click', (function(){
+  
+  document.getElementById('hidden').value = '';
+}));
+
+var chars = [
+  {'char':'\u200b', 'checked':false, 'name': 'ZERO WIDTH SPACE'},
+  {'char':'\u200c', 'checked':true,  'name': 'ZERO WIDTH NON-JOINER'},
+  {'char':'\u200d', 'checked':true,  'name': 'ZERO WIDTH JOINER'},
+  {'char':'\u200e', 'checked':false, 'name': 'LEFT-TO-RIGHT MARK'},
+  {'char':'\u202a', 'checked':false, 'name': 'LEFT-TO-RIGHT EMBEDDING'},
+  {'char':'\u202c', 'checked':true,  'name': 'POP DIRECTIONAL FORMATTING'},
+  {'char':'\u202d', 'checked':false, 'name': 'LEFT-TO-RIGHT OVERRIDE'},
+  {'char':'\ufeff', 'checked':true,  'name': 'ZERO WIDTH NO-BREAK SPACE'}
+];
+for(var i = 0; i < chars.length; i++ ){
+  var e1 = document.createElement('label');
+  var e2 = document.createElement('input');
+  var e3 = document.createTextNode('U+' + chars[i].char.charCodeAt(0).toString(16).toUpperCase() + ' ' + chars[i].name);
+  var e4 = document.createElement('br');
+  
+  e2.type = 'checkbox';
+  e2.value = chars[i].char;
+  e2.checked = chars[i].checked;
+  e2.addEventListener('change', function(){
+    var input = document.getElementsByTagName('input');
+    var chars = '';
+    for(var j = 0; j < input.length; j++){
+      if((input[j].type == 'checkbox') && (input[j].checked != false)){
+        chars += input[j].value;
+      }
+    }
+    unicodeSteganographer.setUseChars(chars);
+  });
+  
+  e1.appendChild(e2);
+  e1.appendChild(e3);
+  e1.appendChild(e4);
+  
+  document.getElementById('used_chars').appendChild(e1);
+}
+
+window.setInterval(function(){
+  document.getElementById('input_length').innerText = '(length: ' + document.getElementById('input').value.length + ')';
+  document.getElementById('hidden_length').innerText = '(length: ' + document.getElementById('hidden').value.length + ')';
+  document.getElementById('output_length').innerText = '(length: ' + document.getElementById('output').value.length + ')';
+}, 100);
+</script>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-71005141-4', 'auto');
+ga('send', 'pageview');
+</script>
+</html>
