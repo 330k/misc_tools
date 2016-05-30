@@ -60,7 +60,7 @@ document.getElementById('encode').addEventListener('click', (function(){
 }));
 document.getElementById('decode').addEventListener('click', (function(){
     var text1 = document.getElementById('output').value;
-    var result = unicodeSteganographer.decodeSteganography(text1);
+    var result = unicodeSteganographer.decodeText(text1);
     document.getElementById('input').value = result.originalText;
     document.getElementById('hidden').value = result.hiddenText;
 }));
