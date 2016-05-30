@@ -162,7 +162,7 @@ document.getElementById('encode_binary').addEventListener('click', function(){
     var bURL = URL.createObjectURL(b);
     document.getElementById('download_stego_text_binary').href = bURL;
     
-    if(stego.length < 100000){
+    if(stego.length < 1000000){
       document.getElementById('output_binary').value = stego;
     }else{
       document.getElementById('output_binary').value = 'Stego text is too long. Please download as a text file. (' + b.size + ' bytes)';
