@@ -9,15 +9,10 @@
 -->
 <head>
 <meta charset="utf-8"/>
-<title>Unicode Steganography with Zero-Width Characters (Binary Experimantal)</title>
-<style>
-table { width: 100%; }
-.left { width: 100%; height: 200px; }
-.right { width: 100%; height: 500px; }
-</style>
+<title>Unicode Steganography with Zero-Width Characters</title>
 </head>
 <body>
-<h1>Unicode Steganography with Zero-Width Characters (Binary Experimantal)</h1>
+<h1>Unicode Steganography with Zero-Width Characters</h1>
 <div>
 This is plain text steganography with zero-width characters of Unicode.<br />
 Zero-width characters is inserted within the words.<br />
@@ -26,35 +21,63 @@ JavaScript library is below.<br />
 <a href="http://330k.github.io/misc_tools/unicode_steganography_bin.js">http://330k.github.io/misc_tools/unicode_steganography_bin.js</a>
 </div>
 <hr style="width: 100%;" />
-<table>
+<h2>Text in Text Steganography Sample</h2>
+<table style="width: 100%;">
 <tr>
-<td style="width: 45%;">
+<td style="width: 45%; vertical-align: top;">
 <div>
-Original Text: <button id="input_clear">Clear</button> <span id="input_length"></span>
-<textarea id="input" class="left">The quick brown fox jumps over the lazy dog
+Original Text: <button id="input_clear_text">Clear</button> <span id="input_length_text"></span>
+<textarea id="input_text" style="width: 100%; height: 150px;">The quick brown fox jumps over the lazy dog
 1234567890.:,;(*!?')
 いろはにほへと ちりぬるを
 色は匂へど 散りぬるを</textarea>
 </div>
-<label><input type="radio" name="input_type" id="input_type_text" checked="checked"/>Input from Text</label>
 <div>
-Hidden Text: <button id="hidden_clear">Clear</button> <span id="hidden_length"></span>
-<textarea id="hidden" class="left">Where am I?</textarea>
-</div>
-<label><input type="radio" name="input_type" id="input_type_file" />Input from File</label>
-<div>
-<input id="input_from_file" type="file" />
-<a id="download_link" download="download">Download as File</a>
+Hidden Text: <button id="hidden_clear_text">Clear</button> <span id="hidden_length_text"></span>
+<textarea id="hidden_text" style="width: 100%; height: 150px;">Where am I?</textarea>
 </div>
 </td>
 <td style="width: 10%; text-align: center;">
-<button id="encode">Encode &raquo;</button><br /><br />
-<button id="decode">&laquo; Decode</button>
+<button id="encode_text">Encode &raquo;</button><br /><br />
+<button id="decode_text">&laquo; Decode</button>
 </td>
 <td style="width: 45%; vertical-align: top;">
 <div>
-Steganography Text: <button id="output_clear">Clear</button> <span id="output_length"></span>
-<textarea id="output" class="right"></textarea>
+Steganography Text: <button id="output_clear_text">Clear</button> <span id="output_length_text"></span><br />
+<a id="download_stego_text_text" download="stego_text.txt">Download Stego Text as File</a>
+<textarea id="output_text" style="width: 100%; height: 300px;"></textarea>
+</div>
+</td>
+</tr>
+</table>
+<hr style="width: 100%;" />
+<h2>Binary in Text Steganography Sample</h2>
+<table style="width: 100%;">
+<tr>
+<td style="width: 45%; vertical-align: top;">
+<div>
+Original Text: <button id="input_clear_binary">Clear</button> <span id="input_length_binary"></span>
+<textarea id="input_binary" style="width: 100%; height: 200px;">The quick brown fox jumps over the lazy dog
+1234567890.:,;(*!?')
+いろはにほへと ちりぬるを
+色は匂へど 散りぬるを</textarea>
+</div>
+<div>
+Hidden Data (Please Select File):
+<input id="input_from_file" type="file" /><br /><br />
+<a id="download_hidden_data" download="hidden_data">Download Hidden Data as File</a><br />
+(Extension must be modified)
+</div>
+</td>
+<td style="width: 10%; text-align: center;">
+<button id="encode_binary">Encode &raquo;</button><br /><br />
+<button id="decode_binary">&laquo; Decode</button>
+</td>
+<td style="width: 45%; vertical-align: top;">
+<div>
+Steganography Text: <button id="output_clear_binary">Clear</button> <span id="output_length_binary"></span><br />
+<a id="download_stego_text_binary" download="stego_text.txt">Download Stego Text as File</a>
+<textarea id="output_binary" style="width: 100%; height: 300px;"></textarea>
 </div>
 </td>
 </tr>
@@ -66,12 +89,20 @@ Characters for steganography: <br />
 </tr>
 </table>
 <hr style="width: 100%;" />
-<h2>Usage</h2>
-<h3><code>unicodeSteganographer.encodeSteganography(String, Uint8Array)</code></h3>
+<h2>Library Usage</h2>
+<h3><code>unicodeSteganographer.encodeText(String, String)</code></h3>
 <div>
-<code>encodeSteganography</code> returns a String which is embedded steganography of Uint8Array.
+<code>encodeSteganography</code> returns a stego String. The 1st argument is a String to be embedded, the 2nd argument is a String to be hidden.
 </div>
-<h3><code>unicodeSteganographer.decodeSteganography(String)</code></h3>
+<h3><code>unicodeSteganographer.encodeBinary(String, Uint8Array)</code></h3>
+<div>
+<code>encodeSteganography</code> returns a stego String which is embedded steganography of Uint8Array.
+</div>
+<h3><code>unicodeSteganographer.decodeText(String)</code></h3>
+<div>
+<code>decodeSteganography</code> returns a JavaScript Object: { originalText: original text (String), hiddenText: hidden text (String)}.
+</div>
+<h3><code>unicodeSteganographer.decodeBinary(String)</code></h3>
 <div>
 <code>decodeSteganography</code> returns a JavaScript Object: { originalText: original text (String), hiddenData: hidden data (Uint8Array)}.
 </div>
@@ -96,57 +127,79 @@ U+200B(ZERO WIDTH SPACE) is deleted in Gmail when sending a mail from browsers.<
 <script>
 'use strict';
 
-document.getElementById('encode').addEventListener('click', (function(){
-  var text1 = document.getElementById('input').value;
-  var text2 = document.getElementById('hidden').value;
+// Encode/Decode Buttons
+document.getElementById('encode_text').addEventListener('click', function(){
+  var text1 = document.getElementById('input_text').value;
+  var text2 = document.getElementById('hidden_text').value;
+  var stego = unicodeSteganographer.encodeText(text1, text2);
+  
+  document.getElementById('output_text').value = stego;
+  var b = new Blob([stego], {type: 'text/plain'});
+  var bURL = URL.createObjectURL(b);
+  document.getElementById('download_stego_text_text').href = bURL;
+});
+document.getElementById('decode_text').addEventListener('click', function(){
+  var text1 = document.getElementById('output_text').value;
+  var result = unicodeSteganographer.decodeText(text1);
+  document.getElementById('input_text').value = result.originalText;
+  document.getElementById('hidden_text').value = result.hiddenText;
+});
+document.getElementById('encode_binary').addEventListener('click', function(){
+  var text1 = document.getElementById('input_binary').value;
   var reader = new FileReader();
   
   var blob;
-  
-  if(document.getElementById('input_type_text').checked){
-    blob = new Blob([text2]);
-  }else if(typeof document.getElementById('input_from_file').files[0] !== 'undefined'){
+  if(typeof document.getElementById('input_from_file').files[0] !== 'undefined'){
     blob = document.getElementById('input_from_file').files[0];
   }else{
+    alert('Please select a file to be hidden');
     return false;
   }
   
   reader.onload = function(){
-    document.getElementById('output').value = unicodeSteganographer.encodeSteganography(text1, new Uint8Array(reader.result));
+    var stego = unicodeSteganographer.encodeBinary(text1, new Uint8Array(reader.result));
+    if(stego.length < 100000){
+      document.getElementById('output_binary').value = stego;
+    }else{
+      document.getElementById('output_binary').value = 'Stego text is too long. Please download as a text file.';
+    }
+    var b = new Blob([stego], {type: 'text/plain'});
+    var bURL = URL.createObjectURL(b);
+    document.getElementById('download_stego_text_binary').href = bURL;
   };
   reader.readAsArrayBuffer(blob);
-}));
-document.getElementById('decode').addEventListener('click', (function(){
-  var text1 = document.getElementById('output').value;
-  var result = unicodeSteganographer.decodeSteganography(text1);
+});
+document.getElementById('decode_binary').addEventListener('click', function(){
+  var text1 = document.getElementById('output_binary').value;
+  var result = unicodeSteganographer.decodeBinary(text1);
   
-  document.getElementById('input').value = result.originalText;
-  
-  var reader = new FileReader();
-  reader.onload = function(){
-    document.getElementById('hidden').value = reader.result;
-  };
-  reader.readAsText(new Blob([result.hiddenData]), {type: 'text/plain;charset=UTF-8'});
+  document.getElementById('input_binary').value = result.originalText;
   
   var blob = new Blob([result.hiddenData], {type: 'application/octet-binary'});
   var blobURL = URL.createObjectURL(blob);
-  document.getElementById('download_link').href = blobURL;
-}));
-document.getElementById('input_clear').addEventListener('click', (function(){
-  document.getElementById('input').value = '';
-}));
-document.getElementById('hidden_clear').addEventListener('click', (function(){
-  document.getElementById('hidden').value = '';
-}));
-document.getElementById('output_clear').addEventListener('click', (function(){
-  document.getElementById('output').value = '';
-}));
+  document.getElementById('download_hidden_data').href = blobURL;
+});
 
-document.getElementById('input_from_file').addEventListener('click', (function(){
-  
-  document.getElementById('hidden').value = '';
-}));
+// Clear Buttons
+document.getElementById('input_clear_text').addEventListener('click', function(){
+  document.getElementById('input_text').value = '';
+});
+document.getElementById('hidden_clear_text').addEventListener('click', function(){
+  document.getElementById('hidden_text').value = '';
+});
+document.getElementById('output_clear_text').addEventListener('click', function(){
+  document.getElementById('output_text').value = '';
+  document.getElementById('download_stego_text_text').removeAttribute('href');
+});
+document.getElementById('input_clear_binary').addEventListener('click', function(){
+  document.getElementById('input_binary').value = '';
+});
+document.getElementById('output_clear_binary').addEventListener('click', function(){
+  document.getElementById('output_binary').value = '';
+  document.getElementById('download_stego_text_binary').removeAttribute('href');
+});
 
+// Zero-Width Characters Selection
 var chars = [
   {'char':'\u200b', 'checked':false, 'name': 'ZERO WIDTH SPACE'},
   {'char':'\u200c', 'checked':true,  'name': 'ZERO WIDTH NON-JOINER'},
@@ -184,10 +237,13 @@ for(var i = 0; i < chars.length; i++ ){
   document.getElementById('used_chars').appendChild(e1);
 }
 
+// Watch Text Length
 window.setInterval(function(){
-  document.getElementById('input_length').innerText = '(length: ' + document.getElementById('input').value.length + ')';
-  document.getElementById('hidden_length').innerText = '(length: ' + document.getElementById('hidden').value.length + ')';
-  document.getElementById('output_length').innerText = '(length: ' + document.getElementById('output').value.length + ')';
+  document.getElementById('input_length_text').innerText = '(length: ' + document.getElementById('input_text').value.length + ')';
+  document.getElementById('hidden_length_text').innerText = '(length: ' + document.getElementById('hidden_text').value.length + ')';
+  document.getElementById('output_length_text').innerText = '(length: ' + document.getElementById('output_text').value.length + ')';
+  document.getElementById('input_length_binary').innerText = '(length: ' + document.getElementById('input_binary').value.length + ')';
+  document.getElementById('output_length_binary').innerText = '(length: ' + document.getElementById('output_binary').value.length + ')';
 }, 100);
 </script>
 <script>
