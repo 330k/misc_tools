@@ -56,13 +56,13 @@ Steganography Text: <button id="output_clear">Clear</button> <span id="output_le
 document.getElementById('encode').addEventListener('click', (function(){
     var text1 = document.getElementById('input').value;
     var text2 = document.getElementById('hidden').value;
-    document.getElementById('output').value = unicodeSteganographer.encodeSteganography(text1, text2);
+    document.getElementById('output').value = unicodeSteganographer.encodeText(text1, text2);
 }));
 document.getElementById('decode').addEventListener('click', (function(){
     var text1 = document.getElementById('output').value;
     var result = unicodeSteganographer.decodeSteganography(text1);
-    document.getElementById('input').value = result[0];
-    document.getElementById('hidden').value = result[1];
+    document.getElementById('input').value = result.originalText;
+    document.getElementById('hidden').value = result.hiddenText;
 }));
 document.getElementById('input_clear').addEventListener('click', (function(){
     document.getElementById('input').value = '';
