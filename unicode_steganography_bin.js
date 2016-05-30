@@ -92,7 +92,7 @@
     Internal Functions
   */
   var encode_to_zerowidth_characters_text = function(str1){
-    var result = [];
+    var result = new Array(str1.length);
     var base = '';
     var i;
     var c;
@@ -120,7 +120,7 @@
     return r;
   };
   var encode_to_zerowidth_characters_binary = function(u8ary){
-    var result = [];
+    var result = new Array(u8ary.length);
     var base = '';
     var i;
     var c;

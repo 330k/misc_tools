@@ -63,7 +63,7 @@ Original Text: <button id="input_clear_binary">Clear</button> <span id="input_le
 色は匂へど 散りぬるを</textarea>
 </div>
 <div>
-Hidden Data (Please Select File):
+Hidden Data (Please Select File &lt; 50kB):
 <input id="input_from_file" type="file" /><br /><br />
 <a id="download_hidden_data" download="hidden_data">Download Hidden Data as File</a><br />
 (Extension must be modified)
@@ -158,14 +158,15 @@ document.getElementById('encode_binary').addEventListener('click', function(){
   
   reader.onload = function(){
     var stego = unicodeSteganographer.encodeBinary(text1, new Uint8Array(reader.result));
-    if(stego.length < 100000){
-      document.getElementById('output_binary').value = stego;
-    }else{
-      document.getElementById('output_binary').value = 'Stego text is too long. Please download as a text file.';
-    }
     var b = new Blob([stego], {type: 'text/plain'});
     var bURL = URL.createObjectURL(b);
     document.getElementById('download_stego_text_binary').href = bURL;
+    
+    if(stego.length < 100000){
+      document.getElementById('output_binary').value = stego;
+    }else{
+      document.getElementById('output_binary').value = 'Stego text is too long. Please download as a text file. (' + b.size + ' bytes)';
+    }
   };
   reader.readAsArrayBuffer(blob);
 });
