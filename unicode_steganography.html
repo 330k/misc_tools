@@ -202,19 +202,25 @@ document.getElementById('output_clear_binary').addEventListener('click', functio
 
 // Zero-Width Characters Selection
 var chars = [
+//  {'char':'\u034f', 'checked':false, 'name': 'COMBINING GRAPHEME JOINER'},
   {'char':'\u200b', 'checked':false, 'name': 'ZERO WIDTH SPACE'},
   {'char':'\u200c', 'checked':true,  'name': 'ZERO WIDTH NON-JOINER'},
   {'char':'\u200d', 'checked':true,  'name': 'ZERO WIDTH JOINER'},
   {'char':'\u200e', 'checked':false, 'name': 'LEFT-TO-RIGHT MARK'},
+//  {'char':'\u2028', 'checked':false, 'name': 'LINE SEPARATOR'},
+//  {'char':'\u2029', 'checked':false, 'name': 'PARAGRAPH SEPARATOR'},
   {'char':'\u202a', 'checked':false, 'name': 'LEFT-TO-RIGHT EMBEDDING'},
   {'char':'\u202c', 'checked':true,  'name': 'POP DIRECTIONAL FORMATTING'},
   {'char':'\u202d', 'checked':false, 'name': 'LEFT-TO-RIGHT OVERRIDE'},
+//  {'char':'\u2061', 'checked':false, 'name': 'FUNCTION APPLICATION'},
+  {'char':'\u2062', 'checked':false, 'name': 'INVISIBLE TIMES'},
+  {'char':'\u2063', 'checked':false, 'name': 'INVISIBLE SEPARATOR'},
   {'char':'\ufeff', 'checked':true,  'name': 'ZERO WIDTH NO-BREAK SPACE'}
 ];
 for(var i = 0; i < chars.length; i++ ){
   var e1 = document.createElement('label');
   var e2 = document.createElement('input');
-  var e3 = document.createTextNode('U+' + chars[i].char.charCodeAt(0).toString(16).toUpperCase() + ' ' + chars[i].name);
+  var e3 = document.createTextNode('U+' + ('000' + chars[i].char.charCodeAt(0).toString(16).toUpperCase()).slice(-4) + ' ' + chars[i].name);
   var e4 = document.createElement('br');
   
   e2.type = 'checkbox';
