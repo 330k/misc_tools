@@ -83,7 +83,7 @@ Steganography Text: <button id="output_clear_binary">Clear</button> <span id="ou
 </tr>
 <tr>
 <td colspan="3">
-Zero Width Characters for steganography: <br />
+Zero Width Characters for Steganography: <br />
 <div id="used_chars"></div>
 </td>
 </tr>
@@ -217,6 +217,16 @@ var chars = [
   {'char':'\u2063', 'checked':false, 'name': 'INVISIBLE SEPARATOR'},
   {'char':'\ufeff', 'checked':true,  'name': 'ZERO WIDTH NO-BREAK SPACE'}
 ];
+var changeCheckbox = function(){
+  var input = document.getElementsByTagName('input');
+  var chars = '';
+  for(var j = 0; j < input.length; j++){
+    if((input[j].type == 'checkbox') && (input[j].name == 'zerowidthcharacters') && (input[j].checked != false)){
+      chars += input[j].value;
+    }
+  }
+  unicodeSteganographer.setUseChars(chars);
+};
 for(var i = 0; i < chars.length; i++ ){
   var e1 = document.createElement('label');
   var e2 = document.createElement('input');
@@ -224,18 +234,10 @@ for(var i = 0; i < chars.length; i++ ){
   var e4 = document.createElement('br');
   
   e2.type = 'checkbox';
+  e2.name = 'zerowidthcharacters';
   e2.value = chars[i].char;
   e2.checked = chars[i].checked;
-  e2.addEventListener('change', function(){
-    var input = document.getElementsByTagName('input');
-    var chars = '';
-    for(var j = 0; j < input.length; j++){
-      if((input[j].type == 'checkbox') && (input[j].checked != false)){
-        chars += input[j].value;
-      }
-    }
-    unicodeSteganographer.setUseChars(chars);
-  });
+  e2.addEventListener('change', changeCheckbox);
   
   e1.appendChild(e2);
   e1.appendChild(e3);
