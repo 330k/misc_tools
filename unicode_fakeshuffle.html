@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unicode Bi-Di Shuffle</title>
+<script>
+function fakeshuffle(str){
+  const buf1 = [];
+  const lines = str.split(/\n/g);
+  for(const line of lines){
+    const buf2 = [];
+    const n = line.length;
+    for(let i = 0; i < n; i++){
+      if(i % 2 == 0){
+        buf2.push("\u2066");
+        buf2.push(line[i >> 1]);
+        buf2.push("\u2067");
+      }else{
+        buf2.push("\u2067");
+        const char = line[n - (i >> 1) - 1];
+        if(/\(|\[|\{/.test(char)){
+          buf2.push("\u202d");
+          buf2.push(char);
+          buf2.push("\u202e");
+        }else{
+          buf2.push(char);
+        }
+        buf2.push("\u2066");
+      }
+    }
+    buf1.push(buf2.join(""));
+  }
+  return buf1.join("\n");
+}
+
+function shuffle(){
+  document.getElementById("text_target").textContent = fakeshuffle(document.getElementById("text_source").textContent)
+}
+</script>
+<style>
+table {
+  width: 100%;
+}
+textarea {
+  width: 100%;
+  height: 300px;
+}
+</style>
+</head>
+<body>
+
+<button onclick="shuffle()">Shuffle</button>
+
+<table>
+<tr><td width="50%">
+<textarea id="text_source">
+Lorem Ipsum is simply dummy text of the printing and typesetting 
+industry.Lorem Ipsum has been the industry's standard dummy text ever 
+since the 1500s,when an unknown printer took a galley of type and 
+scrambled it to make a type specimen book.It has survived not only 
+five centuries,but also the leap into electronic 
+typesetting,remaining essentially unchanged.It was popularised in the 
+1960s with the release of Letraset sheets containing Lorem Ipsum 
+passages,and more recently with desktop publishing software like 
+Aldus PageMaker including versions of Lorem Ipsum.
+</textarea>
+</td>
+<td>
+<textarea id="text_target")></textarea>
+</td>
+</tr>
+</table>
+
+</body>
+</html>
