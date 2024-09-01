@@ -4,6 +4,9 @@ Miscellaneous Tools by 330k
 ## Unicode Steganography with Zero-Width Characters
 http://330k.github.io/misc_tools/unicode_steganography.html
 
+## General Numerical Differential Equation Solver
+https://330k.github.io/misc_tools/ndsolve.html
+
 ## Show KML Layer on Google Maps Gadget for Google Sites
 http://330k.github.io/misc_tools/kmlmap_gadget.xml
 
