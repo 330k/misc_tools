@@ -10,6 +10,9 @@ https://330k.github.io/misc_tools/ndsolve.html
 ## Show KML Layer on Google Maps Gadget for Google Sites
 http://330k.github.io/misc_tools/kmlmap_gadget.xml
 
+## DTMF Tone Generator
+http://330k.github.io/misc_tools/dtmf.html
+
 Usage:
 
 1. Go to Google Sites
