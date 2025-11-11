@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'/>
+<meta name="viewport" content="width=device-width"/>
+<title>DTMF Tone Generator</title>
+<script>
+"use strict";
+
+const DTMF = {
+	"1": [ 697, 1209 ],
+	"2": [ 697, 1336 ],
+	"3": [ 697, 1477 ],
+	"A": [ 697, 1633 ],
+	"4": [ 770, 1209 ],
+	"5": [ 770, 1336 ],
+	"6": [ 770, 1477 ],
+	"B": [ 770, 1633 ],
+	"7": [ 852, 1209 ],
+	"8": [ 852, 1336 ],
+	"9": [ 852, 1477 ],
+	"C": [ 852, 1633 ],
+	"*": [ 941, 1209 ],
+	"0": [ 941, 1336 ],
+	"#": [ 941, 1477 ],
+	"D": [ 941, 1633 ]
+};
+
+let audio;
+let gain;
+let onodes = [];
+
+const startDTMF = async function(code, signal_len, pause_len) {
+	if (!audio) {
+		const AudioContext = window.AudioContext || window.webkitAudioContext;
+		audio = new AudioContext();
+
+		gain = audio.createGain();
+		gain.connect(audio.destination);
+		gain.gain.value = 0.2;
+	}
+	for (const o of onodes) {
+		o.disconnect();
+	}
+	onodes = [];
+	for (let i = 0; i < code.length; i++) {
+		const c = code.charAt(i);
+		const tone = DTMF[c];
+		if (tone) {
+			const start = audio.currentTime;
+			for (const t of tone) {
+				const node = audio.createOscillator();
+				node.frequency.value = t;
+				node.connect(gain);
+				node.start(start + i * (signal_len + pause_len));
+				node.stop(start + i * (signal_len + pause_len) + signal_len);
+				onodes.push(node);
+			}
+		}
+	}
+}
+
+function playDTMF() {
+  try {
+    const num = document.getElementById("signal").value.replace(/\s/g, "");
+    const siglen = document.getElementById("siglen").value * 0.001;
+    const paulen = document.getElementById("paulen").value * 0.001;
+    console.log([num, siglen, paulen]);
+    startDTMF(num, siglen, paulen);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+window.addEventListener("DOMContentLoaded", function(){
+  const params = new URLSearchParams(location.search);
+  
+  if(params.has("signal")){
+    document.getElementById("signal").value = params.get("signal").replace(/\s/g, "");
+  }
+  if(params.has("siglen")){
+    document.getElementById("siglen").value = params.get("siglen");
+  }
+  if(params.has("paulen")){
+    document.getElementById("paulen").value = params.get("paulen");
+  }
+});
+</script>
+<style>
+body {
+	margin: 0px;
+	text-align: center;
+	box-sizing: border-box;
+	font-family: sans-serif;
+}
+#main {
+	margin: 2em 0;
+}
+table{
+  width: 80vw;
+  margin: 0 auto;
+}
+td {
+  /*font-size: 200%;*/
+}
+#signal, #siglen, #paulen {
+  width: 100%;
+  font-size: 200%;
+  padding: 0.2em;
+}
+#play {
+	margin: 0.2em 0;
+	width: 30%;
+	min-width: 300px;
+	font-size: 200%;
+	box-sizing: border-box;
+}
+</style>
+<body>
+
+<h1>DTMF Tone Generator</h1>
+<div id="main">
+  <table>
+    <tr>
+      <td>送信信号</td><td><input type="text" id="signal"  placeholder="1234567890#*"></td>
+    </tr>
+    <tr>
+      <td>信号送出時間 [ms](>50ms)</td><td><input type="number" id="siglen" value="120"></td>
+    </tr>
+    <tr>
+      <td>ポーズ時間 [ms](>30ms)</td><td><input type="number" id="paulen" value="50"></td>
+    </tr>
+    <tr><td colspan="2"><button id="play" onclick="playDTMF();">DTMF再生</button></tr>
+  </form>
+</div>
+</body>
+<html>
